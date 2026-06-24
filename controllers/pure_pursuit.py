@@ -5,6 +5,7 @@ class PurePursuit:
     def __init__(self, wheelbase, lookahead_dist):
         self.L = wheelbase
         self.Ld = lookahead_dist
+        
 
 
     def control(self, x, y, psi, path_x, path_y):
@@ -47,12 +48,12 @@ class PurePursuit:
                 target_x = path_x[closest_idx]
                 target_y = path_y[closest_idx]
 
-        # Angle from vehicle to target point
+        
         target_heading = np.arctan2(target_y - y,target_x - x)
 
-        # Heading error
         alpha = target_heading - psi
 
         # Pure Pursuit steering law
         delta = np.arctan((2 * self.L * np.sin(alpha))/ self.Ld)
-        return delta
+
+        return delta,target_x,target_y

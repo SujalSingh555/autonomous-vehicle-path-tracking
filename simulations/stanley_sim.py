@@ -12,7 +12,7 @@ def run_simulation_stanley(path_x, path_y):
     v = 10                                
     vehicle=BicycleModel(L=L,v=v)
     
-    k=10
+    k=6
     k_psi=1
 
     controller=Stanley(k,k_psi)
@@ -23,6 +23,15 @@ def run_simulation_stanley(path_x, path_y):
 
     x_hist = []
     y_hist = []
+    front_x_hist = []
+    front_y_hist = []
+
+    nearest_x_hist = []
+    nearest_y_hist = []
+
+    path_heading_hist = []
+    cte_hist = []
+    debug_data={}
 
     max_steps=7000
 
@@ -31,9 +40,19 @@ def run_simulation_stanley(path_x, path_y):
         x, y, psi = vehicle.get_state()
 
         x_meas, y_meas, psi_meas = add_noise(x,y,psi)
-        delta = controller.control(x_meas,y_meas,psi_meas,path_x,path_y,v,L)
+        delta,debug= controller.control(x_meas,y_meas,psi_meas,path_x,path_y,v,L)
         #delta = controller.control(x, y, psi,path_x, path_y,v,L)
-        
+
+        front_x_hist.append(debug["front_x"])
+        front_y_hist.append(debug["front_y"])
+
+        nearest_x_hist.append(debug["nearest_x"])
+        nearest_y_hist.append(debug["nearest_y"])
+
+        path_heading_hist.append(debug["path_heading"])
+
+        cte_hist.append(debug["cte"])
+                
 
         vehicle.update(0, delta, dt)
 
@@ -47,8 +66,18 @@ def run_simulation_stanley(path_x, path_y):
 
         if goal_dist < 2:
             break
+    debug_data = {
+    "front_x": front_x_hist,
+    "front_y": front_y_hist,
 
-    return x_hist,y_hist
+    "nearest_x": nearest_x_hist,
+    "nearest_y": nearest_y_hist,
+
+    "path_heading": path_heading_hist,
+
+    "cte": cte_hist}
+
+    return (x_hist,y_hist,debug_data)
 
     
 

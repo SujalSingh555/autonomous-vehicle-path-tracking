@@ -13,9 +13,10 @@ def run_simulation_pp(path_x, path_y):
     # Initialize vehicle
     v = 10
     vehicle = BicycleModel(L=L,v=v)
-
+    lookhead_x=[]
+    lookhead_y=[]
     # Initialize controller
-    controller = PurePursuit(wheelbase=L,lookahead_dist=4)
+    controller = PurePursuit(wheelbase=L,lookahead_dist=10)
 
     
     freq=20.0
@@ -29,7 +30,7 @@ def run_simulation_pp(path_x, path_y):
 
     max_iterations = 5000
     iteration = 0
-
+    debug_data = {}
     
     while iteration < max_iterations:
         iteration += 1
@@ -38,7 +39,9 @@ def run_simulation_pp(path_x, path_y):
 
         x_meas, y_meas, psi_meas = add_noise(x,y,psi)
         # adding noise
-        delta = controller.control(x_meas,y_meas,psi_meas,path_x,path_y)
+        delta,tar_x,tar_y = controller.control(x_meas,y_meas,psi_meas,path_x,path_y)
+        lookhead_x.append(tar_x)
+        lookhead_y.append(tar_y)
         #delta = controller.control(x,y,psi,path_x,path_y)
         #if iteration < 50:
             #print(delta)
@@ -54,4 +57,9 @@ def run_simulation_pp(path_x, path_y):
         )
         if goal_dist<2:
             break
-    return x_hist,y_hist
+
+        debug_data = {
+    "lookahead_x": lookhead_x,
+    "lookahead_y": lookhead_y}
+        
+    return x_hist,y_hist,debug_data

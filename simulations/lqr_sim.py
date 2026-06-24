@@ -13,7 +13,7 @@ def run_simulation_lqr(path_x, path_y):
 
     Q=np.diagflat([10,1,10,1,4])
     R=np.diagflat([50,1])
-    max_speed=20
+    max_speed=10
     controller=LQR(wheelbase=L,Q=Q,R=R,max_speed=max_speed)
 
     freq=20.0

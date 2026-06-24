@@ -45,5 +45,5 @@ def plot_path(path_x, path_y,
 
     plt.grid(True)
     plt.legend()
-
+    plt.ylim(0,5)
     plt.show()

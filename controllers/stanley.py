@@ -33,4 +33,19 @@ class Stanley:
         heading_error = path_heading - psi
         heading_error = np.arctan2(np.sin(heading_error),np.cos(heading_error)) #restraining angles betweeen pi and -pi
 
-        return (self.k_psi*heading_error+np.arctan((self.k*direction*crosstrack_error)/(v + 1e-6)))
+        delta = (
+        self.k_psi*heading_error+
+        np.arctan(
+            (self.k*direction*crosstrack_error)/(v + 1e-6)))
+
+        debug = {
+            "front_x": x_front,
+            "front_y": y_front,
+            "nearest_x": path_x[closest_idx],
+            "nearest_y": path_y[closest_idx],
+            "path_heading": path_heading,
+            "cte": crosstrack_error,
+            "heading_error": heading_error
+        }
+
+        return delta, debug
