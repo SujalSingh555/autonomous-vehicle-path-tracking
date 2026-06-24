@@ -15,7 +15,7 @@ def run_simulation_pp(path_x, path_y):
     vehicle = BicycleModel(L=L,v=v)
 
     # Initialize controller
-    controller = PurePursuit(wheelbase=L,lookahead_dist=10)
+    controller = PurePursuit(wheelbase=L,lookahead_dist=4)
 
     
     freq=20.0

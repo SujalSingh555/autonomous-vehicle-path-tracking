@@ -1,22 +1,21 @@
 import numpy as np
 import paths.generate_path as gp
-from vehicle.bicycle_model_lqr import BicycleModelLQR
-from controllers.lqr import LQR
+from vehicle.bicycle_model_lqr_3state import BicycleModelLQR
+from controllers.lqr_3state import LQR           # ← lqr_3state
 from utils.metrics import *
 from utils.sensor_noise import add_noise
 
 
-
-def run_simulation_lqr(path_x, path_y):
+def run_simulation_lqr3state(path_x, path_y):
     L=4
     vehicle=BicycleModelLQR(L=L)
 
-    Q=np.diagflat([10,1,10,1,4])
-    R=np.diagflat([50,1])
+    Q=np.diagflat([4,4,1])               # ← 3x3
+    R=np.diagflat([20,1])
     max_speed=20
     controller=LQR(wheelbase=L,Q=Q,R=R,max_speed=max_speed)
 
-    freq=20.0
+    freq=10.0
     dt = 1/freq
 
     x_hist = []
@@ -24,17 +23,14 @@ def run_simulation_lqr(path_x, path_y):
     delta_hist = []
     a_hist = []
 
-    path_segments = np.hypot(np.diff(path_x), np.diff(path_y))
-
     max_iterations = 5000
     
     for i in range(max_iterations):
         x,y,psi,v,delta=vehicle.get_state()
         x_meas,y_meas,psi_meas = add_noise(x,y,psi,pos_std=0.15,heading_std=0.03)
         
-        delta_dot,a=controller.control(x_meas,y_meas,v,psi_meas,path_x,path_y,dt)
-        #delta_dot,a=controller.control(x,y,v,psi,path_x,path_y,dt)
-        vehicle.update(a=a,delta_dot=delta_dot,dt=dt)
+        delta,a=controller.control(x_meas,y_meas,v,psi_meas,path_x,path_y,dt)  # ← delta not delta_dot
+        vehicle.update(a=a,delta=delta,dt=dt)                                    # ← delta not delta_dot
         x_hist.append(x)
         y_hist.append(y)
         delta_hist.append(delta)
@@ -45,8 +41,7 @@ def run_simulation_lqr(path_x, path_y):
             y - path_y[-1]
         )
 
-        if goal_dist < max_speed*1/30:
+        if goal_dist < 2:
             break
-
 
     return(x_hist,y_hist,delta_hist)

@@ -12,7 +12,7 @@ def run_simulation_stanley(path_x, path_y):
     v = 10                                
     vehicle=BicycleModel(L=L,v=v)
     
-    k=5
+    k=10
     k_psi=1
 
     controller=Stanley(k,k_psi)

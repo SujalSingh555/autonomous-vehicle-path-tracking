@@ -1,6 +1,6 @@
 import numpy as np
 
-def add_noise(x, y, psi,pos_std=0.15,heading_std=0.03):
+def add_noise(x, y, psi,pos_std=0.2,heading_std=0.03):
 
     noisy_x = x + np.random.normal(0, pos_std)
     noisy_y = y + np.random.normal(0, pos_std)

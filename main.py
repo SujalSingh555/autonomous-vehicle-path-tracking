@@ -7,11 +7,12 @@ import paths.generate_path as gp
 from utils.metrics import *
 
 def main():
-    path_x, path_y=gp.generate_sine_path()
+    path_x, path_y=gp.generate_straight_path()
 
     stanley_x_hist,stanley_y_hist=run_simulation_stanley(path_x, path_y)
     pp_x_hist,pp_y_hist=run_simulation_pp(path_x, path_y)
     lqr_x_hist,lqr_y_hist,delta_hist=run_simulation_lqr(path_x,path_y)
+
 
     plot_path_comparison.plot_path(path_x,
     path_y,
@@ -31,7 +32,7 @@ def main():
     stanley_x_hist,
     stanley_y_hist,lqr_x_hist,lqr_y_hist,dt)
 
-    animation.animate_vehicle(path_x,path_y,lqr_x_hist,lqr_y_hist,delta_hist,dt)
+    animation.animate_vehicle(path_x,path_y,pp_x_hist,pp_y_hist,None,dt)
 
     pp_errors = compute_tracking_errors(path_x,path_y,pp_x_hist,pp_y_hist)
     stanley_errors = compute_tracking_errors(path_x,path_y,stanley_x_hist,stanley_y_hist)
