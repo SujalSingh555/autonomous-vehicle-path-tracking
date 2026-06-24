@@ -5,6 +5,7 @@ from controllers.pure_pursuit import PurePursuit
 from controllers.stanley import Stanley
 from utils.metrics import *
 from utils.sensor_noise import add_noise
+from utils.kalman_filter import KalmanFilter
 
 
 def run_simulation_stanley(path_x, path_y):
@@ -12,7 +13,7 @@ def run_simulation_stanley(path_x, path_y):
     v = 10                                
     vehicle=BicycleModel(L=L,v=v)
     
-    k=6
+    k=12
     k_psi=1
 
     controller=Stanley(k,k_psi)
@@ -20,6 +21,12 @@ def run_simulation_stanley(path_x, path_y):
     
     freq=20.0
     dt = 1/freq
+    kf = KalmanFilter(dt)
+    kf.x = np.array([
+    [vehicle.x],
+    [vehicle.y],
+    [vehicle.psi]
+    ])
 
     x_hist = []
     y_hist = []
@@ -32,17 +39,32 @@ def run_simulation_stanley(path_x, path_y):
     path_heading_hist = []
     cte_hist = []
     debug_data={}
+    delta_prev=0
 
-    max_steps=7000
+    max_steps=5000
 
     for i in range(max_steps):
 
         x, y, psi = vehicle.get_state()
 
         x_meas, y_meas, psi_meas = add_noise(x,y,psi)
-        delta,debug= controller.control(x_meas,y_meas,psi_meas,path_x,path_y,v,L)
-        #delta = controller.control(x, y, psi,path_x, path_y,v,L)
 
+        kf.predict(
+            v=v,
+            delta=delta_prev,
+            L=L
+        )
+
+        x_est, y_est, psi_est = kf.update(
+            x_meas,
+            y_meas,
+            psi_meas
+        )     
+
+        delta,debug= controller.control(x_est,y_est,psi_est,path_x,path_y,v,L)
+        #delta,debug= controller.control(x_meas,y_meas,psi_meas,path_x,path_y,v,L)
+        #delta = controller.control(x, y, psi,path_x, path_y,v,L)
+        delta_prev=delta
         front_x_hist.append(debug["front_x"])
         front_y_hist.append(debug["front_y"])
 

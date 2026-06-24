@@ -4,6 +4,7 @@ from vehicle.bicycle_model_lqr_3state import BicycleModelLQR
 from controllers.lqr_3state import LQR           # ← lqr_3state
 from utils.metrics import *
 from utils.sensor_noise import add_noise
+from utils.kalman_filter import KalmanFilter
 
 
 def run_simulation_lqr3state(path_x, path_y):
@@ -17,6 +18,7 @@ def run_simulation_lqr3state(path_x, path_y):
 
     freq=10.0
     dt = 1/freq
+    kf = KalmanFilter(dt)
 
     x_hist = []
     y_hist = []

@@ -4,6 +4,7 @@ from vehicle.bicycle_model import BicycleModel
 from controllers.pure_pursuit import PurePursuit
 from utils.metrics import *
 from utils.sensor_noise import add_noise
+from utils.kalman_filter import KalmanFilter
 
 
 def run_simulation_pp(path_x, path_y):
@@ -21,6 +22,12 @@ def run_simulation_pp(path_x, path_y):
     
     freq=20.0
     dt = 1/freq
+    kf = KalmanFilter(dt)
+    kf.x = np.array([
+    [vehicle.x],
+    [vehicle.y],
+    [vehicle.psi]
+    ])
 
     x_hist = []
     y_hist = []
@@ -31,6 +38,7 @@ def run_simulation_pp(path_x, path_y):
     max_iterations = 5000
     iteration = 0
     debug_data = {}
+    delta_prev=0
     
     while iteration < max_iterations:
         iteration += 1
@@ -39,7 +47,21 @@ def run_simulation_pp(path_x, path_y):
 
         x_meas, y_meas, psi_meas = add_noise(x,y,psi)
         # adding noise
+        kf.predict(
+            v=v,
+            delta=delta_prev,
+            L=L
+        )
+
+        x_est, y_est, psi_est = kf.update(
+            x_meas,
+            y_meas,
+            psi_meas
+        )        
+        #delta,tar_x,tar_y = controller.control(x_est,y_est,psi_est,path_x,path_y)
+        
         delta,tar_x,tar_y = controller.control(x_meas,y_meas,psi_meas,path_x,path_y)
+        delta_prev=delta
         lookhead_x.append(tar_x)
         lookhead_y.append(tar_y)
         #delta = controller.control(x,y,psi,path_x,path_y)
@@ -58,7 +80,7 @@ def run_simulation_pp(path_x, path_y):
         if goal_dist<2:
             break
 
-        debug_data = {
+    debug_data = {
     "lookahead_x": lookhead_x,
     "lookahead_y": lookhead_y}
         
