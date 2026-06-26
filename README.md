@@ -157,7 +157,6 @@ This runs all three controllers on all four paths, plots trajectory and error co
 - Dynamic bicycle model incorporating tyre forces and lateral slip
 - Model Predictive Control (MPC)
 - ROS2 and Gazebo integration
-- Hardware deployment on robotic platform
 
 ---
 
