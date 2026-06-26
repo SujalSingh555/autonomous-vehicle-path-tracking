@@ -164,5 +164,5 @@ This runs all three controllers on all four paths, plots trajectory and error co
 ## Author
 
 **Sujal Singh** — Personal Project  
-B.Tech (Hons.) Mechanical Engineering, IIT Kharagpur  
+B.Tech Mechanical Engineering, IIT Kharagpur  
 [GitHub](https://github.com/SujalSingh555/autonomous-vehicle-path-tracking)
